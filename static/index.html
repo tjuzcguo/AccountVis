@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Variable Engine Web Console</title>
+    <!-- Custom styles for this template -->
+    <link href="css/freelancer.min.css" rel="stylesheet">
+
+    <link href="/css/demo.css" rel="stylesheet">
+    <link href="/css/3.3.7-bootstrap.min.css" rel="stylesheet">
+    <script src="/js/lib/2.1.1-jquery.min.js"></script>
+    <script src="/js/lib/3.3.7-bootstrap.min.js"></script>
+    <script src="/js/lib/angularJS-1.4.6.js"></script>
+    <script src="/js/lib/d3.js"></script>
+    <script src="/js/lib/showVia.js"></script>
+    <script src="/js/lib/nviTree.js"></script>
+    <script src="/js/lib/tree-view.js"></script>
+
+    <!-- bootstrap-table -->
+    <link href="/css/bootstrap-table.css" rel="stylesheet">
+    <script src="/js/lib/bootstrap-table.js"></script>
+    <script src="/js/lib/bootstrap-table-zh-CN.min.js"></script>
+
+    <link href="/css/webuploader.css" rel="stylesheet">
+    <script src="/js/lib/webuploader.js"></script>
+
+
+    <style>
+        #picker div.webuploader-pick{
+            height: 30px;
+            padding: 6px 15px;
+            margin-top: 3px;
+            height: 30px!important;
+        }
+        #picker {
+            float: left;
+        }
+        #ctlBtn {
+            float: left;
+            height: 30px;
+            margin-left: 15px;
+            margin-top: 3px;
+            width: 90px;
+        }
+    </style>
+
+</head>
+
+<body id="page-top" ng-app="getVialbles">
+<!-- Navigation -->
+<div class="container  bg-secondary" style="text-align: center; width: 100%;color: white">
+    <h1>变量引擎——网络控制台</h1>
+</div>
+
+<!-- Header -->
+<div style="height: 85%;width:100%;">
+    <div id="main">
+        <div id="tree" style="float:left;height:100%;width: 30%; overflow-y: auto;" ng-controller="showViables">
+            <br>
+            <!-- <form> -->
+            <div class="form-group">
+                <label for="input-search" class="sr-only">Search Tree:</label>
+                <input type="input" class="form-control" id="input-search" placeholder="Type to search..." value="">
+            </div>
+            <div class="row">
+                <button type="button" class="col-md-3 btn btn-default" id="btn-clear-search">Clear</button>
+                <div class="checkbox col-md-6">
+                    <label>
+                        <input type="checkbox" class="checkbox" id="chk-select-multi" value="false">
+                        选择多个
+                    </label>
+                </div>
+            </div>
+
+
+            <!-- </form> -->
+            <h2>变量列表:</h2>
+            <div id="treeview-searchable" class=""></div>
+        </div>
+
+
+
+        <div id="display">
+            <div id="uploader" class="wu-example">
+                <!--待上传的文件列表，用来存放文件信息-->
+                <div id="thelist" class="uploader-list"></div>
+                <div class="btns">
+                    <div id="picker">选择文件</div>
+                    <button id="ctlBtn" class="btn btn-default">开始上传</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+<!-- Footer -->
+<footer class="footer text-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-5 mb-lg-0 py-4 text-center text-white">
+                <div class="container">
+                    <small>Copyright &copy; juxinli 2018</small>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</footer>
+
+
+<!--编辑当前变量 -->
+<div style="color: #000000">
+    <div class="modal fade" id="editVar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        编辑当前变量
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h3>变量详细信息:</h3>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="input-group input-group-sm" ng-controller="showViables">
+                                            <span class="input-group-addon">变量名称：</span>
+                                            <input type="text" class="form-control" id="variableNameE"
+                                                   ng-model="variableName">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group input-group-sm" ng-controller="showViables">
+                                            <span class="input-group-addon">变量类型：</span>
+                                            <select style="height: 30px;width: 100%;" id="variableTypeE"
+                                                    ng-model="variableType" ng-options="x for x in variableTypeNs">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="input-group input-group-sm" ng-controller="showViables">
+                                            <span class="input-group-addon">变量类别：</span>
+                                            <select style="height: 30px;width: 100%;" id="variableCategoryE"
+                                                    ng-model="variableCategory"
+                                                    ng-options="x for x in variableCategoryNs">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group input-group-sm" ng-controller="showViables">
+                                            <span class="input-group-addon">变量状态：</span>
+                                            <input type="text" class="form-control" id="variableStatusE"
+                                                   ng-model="variableStatus">
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="input-group input-group-sm" ng-controller="showViables">
+                                            <span class="input-group-addon">变量来源：</span>
+                                            <input type="text" class="form-control" id="variableSourceE"
+                                                   ng-model="variableSource">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group input-group-sm" ng-controller="showViables">
+                                            <span class="input-group-addon">变量描述：</span>
+                                            <input type="text" class="form-control" id="variableDescriptionE"
+                                                   ng-model="variableDescription">
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-click="editSubmit()" ng-controller="editV">
+                        提交
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+    <!--添加新的变量 -->
+
+    <div ng-controller="updateV" style="color: #000000">
+        <div class="modal fade" id="addVar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel2">
+                            添加新的变量
+                        </h4>
+                    </div>
+                    <div class="modal-body" ng-controller="updateV">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h3>变量详细信息:</h3>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="input-group input-group-sm" ng-controller="updateV">
+                                                <span class="input-group-addon">变量名称：</span>
+                                                <input type="text" class="form-control" id="variableNameN"
+                                                       ng-model="variableNameN">
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group" ng-controller="updateV">
+                                                <div class="input-group input-group-sm" ng-controller="updateV">
+                                                    <span class="input-group-addon">变量类型：</span>
+                                                    <select style="height: 30px;width: 100%;" id="variableTypeN"
+                                                            ng-init="variableTypeN=variableTypeNs[0]"
+                                                            ng-model="variableTypeN"
+                                                            ng-options="x for x in variableTypeNs">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="input-group input-group-sm" ng-controller="updateV">
+                                                <span class="input-group-addon">变量类别：</span>
+                                                <select style="height: 30px;width: 100%;" id="variableCategoryN"
+                                                        ng-init="variableCategoryN=variableCategoryNs[0]"
+                                                        ng-model="variableCategoryN"
+                                                        ng-options="x for x in variableCategoryNs">
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-group input-group-sm" ng-controller="updateV">
+                                                <span class="input-group-addon">变量状态：</span>
+                                                <input type="text" class="form-control" id="variableStatusN"
+                                                       ng-model="variableStatusN">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="input-group input-group-sm" ng-controller="updateV">
+                                                <span class="input-group-addon">变量来源：</span>
+                                                <input type="text" class="form-control" id="variableSourceN"
+                                                       ng-model="variableSourceN">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-group input-group-sm" ng-controller="updateV">
+                                                <span class="input-group-addon">变量描述：</span>
+                                                <input type="text" class="form-control" id="variableDescriptionN"
+                                                       ng-model="variableDescriptionN">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                        </button>
+                        <button type="button" class="btn btn-primary" ng-controller="updateV" ng-click="addSubmit()">
+                            提交更改
+                        </button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+
+
+</body>
+<script type="text/javascript">
+    jQuery(function() {
+        /*对于一些控件的初始化*/
+        var $ = jQuery,
+            //待上传的文件列表
+            $list = $('#thelist'),
+            //开始上传按钮
+            $btn = $('#ctlBtn'),
+            //显示状态 上传成功、上传失败。。
+            state = 'pending',
+            //上传的方法
+            uploader;
+
+        uploader = WebUploader.create({
+
+            // 不压缩image
+            resize: false,
+
+            // 为true 文件则自动上传
+            auto: false,
+
+            // swf文件路径  使用flash才会用到
+            // swf: BASE_URL + '/js/Uploader.swf',
+
+            // 文件接收服务端。就是上传文件走的url
+            server: '/upload',
+
+            // 选择文件的按钮。可选。
+            pick: '#picker',
+
+            // 默认所有都可选，过滤文件类型参考网址： http://www.cnblogs.com/s.sams/archive/2007/10/10/918817.html
+            // 只允许选择图片文件。
+            /*accept: {
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,bmp,png',
+                mimeTypes: 'image/!*'
+            },*/
+
+            // 只允许选择Excel文件。
+            accept: {// 只允许选择Excel文件格式
+                title: 'Excel',
+                extensions: 'xls,xlsx',
+                mimeTypes: 'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'  /*限制选择文件的类型*/
+            }
+        });
+
+        // 当有文件添加进来的时候
+        uploader.on( 'fileQueued', function( file ) {
+            $list.append( '<div id="' + file.id + '" class="item">' +
+                '<h4 class="info">' + file.name + '</h4>' +
+                '<p class="state">等待上传...</p>' +
+                '</div>' );
+        });
+
+        // 文件上传过程中创建进度条实时显示。
+        // 进度条我引用了bootStrap.css来进行展示,webuploader.css是不带的
+        uploader.on( 'uploadProgress', function( file, percentage ) {
+            var $li = $( '#'+file.id ),
+                $percent = $li.find('.progress .progress-bar');
+
+            // 避免重复创建
+            if ( !$percent.length ) {
+                $percent = $('<div class="progress progress-striped active">' +
+                    '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+                    '</div>' +
+                    '</div>').appendTo( $li ).find('.progress-bar');
+            }
+
+            $li.find('p.state').text('上传中');
+
+            $percent.css( 'width', percentage * 100 + '%' );
+        });
+
+        // 上传成功
+        uploader.on( 'uploadSuccess', function( file ) {
+            $( '#'+file.id ).find('p.state').text('已上传');
+        });
+
+        // 上传失败
+        uploader.on( 'uploadError', function( file ) {
+            $( '#'+file.id ).find('p.state').text('上传出错');
+        });
+
+        uploader.on( 'uploadComplete', function( file ) {
+            $( '#'+file.id ).find('.progress').fadeOut();
+        });
+
+        uploader.on( 'all', function( type ) {
+            if ( type === 'startUpload' ) {
+                state = 'uploading';
+            } else if ( type === 'stopUpload' ) {
+                state = 'paused';
+            } else if ( type === 'uploadFinished' ) {
+                state = 'done';
+            }
+
+            if ( state === 'uploading' ) {
+                $btn.text('暂停上传');
+            } else {
+                $btn.text('开始上传');
+            }
+        });
+
+        // 开始上传 按钮点击事件 触发 上传方法
+        // 如果开启了自动上传，则不必要
+        $btn.on( 'click', function() {
+            if ( state === 'uploading' ) {
+                uploader.stop();
+            } else {
+                uploader.upload();
+            }
+        });
+    });
+
+
+
+    // $("#content").bootstrapTable({ // 对应table标签的id
+    //     url: "/api/acquireVars?category=1", // 获取表格数据的url
+    //     columns: [
+    //         {
+    //             checkbox: true, // 显示一个勾选框
+    //             align: 'center' // 居中显示
+    //         }, {
+    //             field: 'name', // 返回json数据中的name
+    //             title: '变量名', // 表格表头显示文字
+    //             align: 'center', // 左右居中
+    //             valign: 'middle' // 上下居中
+    //         }, {
+    //             field: 'description', // 返回json数据中的name
+    //             title: '变量描述', // 表格表头显示文字
+    //             align: 'center', // 左右居中
+    //             valign: 'middle' // 上下居中
+    //         }
+    //         , {
+    //             field: 'type', // 返回json数据中的name
+    //             title: '变量类型', // 表格表头显示文字
+    //             align: 'center', // 左右居中
+    //             valign: 'middle' // 上下居中
+    //         }
+    //         , {
+    //             field: 'category', // 返回json数据中的name
+    //             title: '变量类别', // 表格表头显示文字
+    //             align: 'center', // 左右居中
+    //             valign: 'middle' // 上下居中
+    //         }
+    //         , {
+    //             field: 'source', // 返回json数据中的name
+    //             title: '来源', // 表格表头显示文字
+    //             align: 'center', // 左右居中
+    //             valign: 'middle' // 上下居中
+    //         } , {
+    //             field: 'alias1', // 返回json数据中的name
+    //             title: '别名', // 表格表头显示文字
+    //             align: 'center', // 左右居中
+    //             valign: 'middle' // 上下居中
+    //         }
+    //     ],
+    //     onLoadSuccess: function(){  //加载成功时执行
+    //         console.info("加载成功");
+    //     },
+    //     onLoadError: function(){  //加载失败时执行
+    //         console.info("加载数据失败");
+    //     }
+    //
+    // })
+
+</script>>
+
+</html>
