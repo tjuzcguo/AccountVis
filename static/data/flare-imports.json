@@ -1,9 +1,0 @@
-[
-  {"name":"A","size":3938,"imports":["B","C","D"]},
-  {"name":"B","size":3938,"imports":["A","C","D"]},
-  {"name":"C","size":3938,"imports":["B","A","D"]},
-  {"name":"D","size":3938,"imports":["B","A","C"]}
-
-
-
-]
